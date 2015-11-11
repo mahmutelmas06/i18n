@@ -4,7 +4,7 @@
 if rawget(_G, "i18n") then return end
 
 i18n = {}
-i18n.locale = minetest.setting_get("locale")
+i18n.locale = minetest.setting_get("language")
 i18n.l10n = {}
 
 function i18n.format(s, default, args)
