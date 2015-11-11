@@ -9,15 +9,8 @@ i18n.l10n = {}
 
 function i18n.format(s, default, args)
 	local formatted = default or s
-	
-	if i18n.locale then
-		formatted = i18n.l10n[s] or formatted
-	end
-	
-	if args then
-		formatted = formatted:format(args)
-	end
-	
+	if i18n.locale then formatted = i18n.l10n[s] or formatted end
+	if args then formatted = string.format(formatted, args) end
 	return formatted
 end
 
@@ -37,30 +30,27 @@ function i18n.localize_mod(modname)
 end
 
 if i18n.locale then
-	local function get_path(...)
-		local separator = package.config:sub(1,1);
-		local elements = {...}
-		return table.concat(elements, separator)
-	end
-
-	local function exists(file)
-		return os.rename(file, file)
-	end
-
-	local function list_files(dir)
-		-- Unix: ls -a dir
-		return io.popen('dir "'..dir..'" /b'):lines()
-	end
-	
 	for i, modname in ipairs(minetest.get_modnames()) do
-		local dir = get_path(minetest.get_modpath(modname), "lang")
+		local separator = package.config:sub(1, 1)
+		local dir = minetest.get_modpath(modname)..separator.."lang"
+		local exists = os.rename(dir, dir)
 		
-		if exists(dir) then
-			for file in list_files(dir) do
+		if exists then
+			local files
+			
+			if separator == "\\" or separator == "\\\\" then
+				-- Windows
+				files = io.popen('asdf "'..dir..'" /b'):lines()
+			else
+				-- Unix?
+				files = io.popen('ls -a "'..dir..'"'):lines()
+			end
+			
+			for file in files do
 				local locale, filetype = file:match("([^\\/]-)(%.?[^%.\\/]*)$")
 				
 				if locale == i18n.locale and filetype == ".lua" then
-					local l10n = dofile(get_path(dir, file))
+					local l10n = dofile(dir..separator..file)
 					
 					for name, description in pairs(l10n) do
 						i18n.l10n[name] = description
