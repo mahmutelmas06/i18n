@@ -7,10 +7,10 @@ i18n = {}
 i18n.locale = minetest.setting_get("language")
 i18n.l10n = {}
 
-function i18n.format(s, default, args)
+function i18n.format(s, default, ...)
 	local formatted = default or s
 	if i18n.locale then formatted = i18n.l10n[s] or formatted end
-	if args then formatted = string.format(formatted, args) end
+	if ... then formatted = string.format(formatted, ...) end
 	return formatted
 end
 
