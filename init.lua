@@ -29,6 +29,23 @@ function i18n.localize_mod(modname)
 	end
 end
 
+function i18n.localize_mods(modnames)
+	if i18n.locale then
+		for name, def in pairs(minetest.registered_items) do
+			if def.description and def.description ~= "" then
+				for i, modname in ipairs(modnames) do
+					if name:match("^"..modname..":") then
+						minetest.override_item(name, {
+							description = i18n.format(name, def.description)
+						})
+						break
+					end
+				end
+			end
+		end
+	end
+end
+
 if i18n.locale then
 	for i, modname in ipairs(minetest.get_modnames()) do
 		local separator = package.config:sub(1, 1)
