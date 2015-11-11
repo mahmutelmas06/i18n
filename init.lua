@@ -21,7 +21,7 @@ function i18n.localize_mod(modname)
 			if def.description and def.description ~= "" then
 				if name:match("^"..modname..":") then
 					minetest.override_item(name, {
-						description = i18n.format(s, def.description)
+						description = i18n.format(name, def.description)
 					})
 				end
 			end
