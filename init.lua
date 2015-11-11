@@ -40,7 +40,7 @@ if i18n.locale then
 			
 			if separator == "\\" or separator == "\\\\" then
 				-- Windows
-				files = io.popen('asdf "'..dir..'" /b'):lines()
+				files = io.popen('dir "'..dir..'" /b'):lines()
 			else
 				-- Unix?
 				files = io.popen('ls -a "'..dir..'"'):lines()
