@@ -49,7 +49,7 @@ end
 if i18n.locale then
 	for i, modname in ipairs(minetest.get_modnames()) do
 		local separator = package.config:sub(1, 1)
-		local dir = minetest.get_modpath(modname)..separator.."lang"
+		local dir = minetest.get_modpath(modname)..separator.."locale"
 		local exists = os.rename(dir, dir)
 		
 		if exists then
