@@ -53,14 +53,13 @@ end
 
 if i18n.has_locale() then
 	for i, modname in ipairs(minetest.get_modnames()) do
-		local separator = package.config:sub(1, 1)
-		local dir = minetest.get_modpath(modname)..separator.."locale"
+		local dir = minetest.get_modpath(modname)..DIR_DELIM.."locale"
 		local exists = os.rename(dir, dir)
 		
 		if exists then
 			local files
 			
-			if separator == "\\" or separator == "\\\\" then
+			if jit.os == "Windows" then
 				-- Windows
 				files = io.popen('dir "'..dir..'" /b'):lines()
 			else
@@ -72,7 +71,7 @@ if i18n.has_locale() then
 				local locale, filetype = file:match("([^\\/]-)(%.?[^%.\\/]*)$")
 				
 				if locale == i18n.locale and filetype == ".lua" then
-					local l10n = dofile(dir..separator..file)
+					local l10n = dofile(dir..DIR_DELIM..file)
 					
 					for name, description in pairs(l10n) do
 						i18n.l10n[name] = description
