@@ -54,39 +54,25 @@ end
 if i18n.has_locale() then
 	for i, modname in ipairs(minetest.get_modnames()) do
 		local dir = minetest.get_modpath(modname)..DIR_DELIM.."locale"
-		local exists = os.rename(dir, dir)
+		local file = dir..DIR_DELIM..i18n.locale..".lua"
 		
-		if exists then
-			local files
+		if file_exists(file) then
+			local l10n = dofile(file)
 			
-			if jit.os == "Windows" then
-				-- Windows
-				files = io.popen('dir "'..dir..'" /b'):lines()
-			else
-				-- Unix?
-				files = io.popen('ls -a "'..dir..'"'):lines()
-			end
-			
-			for file in files do
-				local locale, filetype = file:match("([^\\/]-)(%.?[^%.\\/]*)$")
-				
-				if locale == i18n.locale and filetype == ".lua" then
-					local l10n = dofile(dir..DIR_DELIM..file)
+			if l10n then
+				for name, description in pairs(l10n) do
+					i18n.l10n[name] = description
 					
-					for name, description in pairs(l10n) do
-						i18n.l10n[name] = description
-						
-						-- Localize item if mod already active
-						local def = minetest.registered_items[name]
-						if def and def.description and def.description ~= "" then
-							minetest.override_item(name, {
-								description = description or def.description
-							})
-						end
+					-- Localize item if mod already active
+					local def = minetest.registered_items[name]
+					if def and def.description and def.description ~= "" then
+						minetest.override_item(name, {
+							description = description or def.description
+						})
 					end
-					
-					minetest.log("action", "Added localization from "..dir)
 				end
+				
+				minetest.log("verbose", "Added localization from "..file)
 			end
 		end
 	end
